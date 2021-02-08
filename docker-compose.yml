@@ -1,0 +1,28 @@
+version: '3.3'
+services:
+  code-server:
+    image: codercom/code-server
+    ports:
+      - '8181:8080'
+    volumes:
+      - '$PWD:/home/coder/project'
+    environment:
+      PASSWORD: vscode
+    user: root
+    ipc: host
+    restart: unless-stopped
+
+  app:
+    build: ./
+    environment:
+      PHP_IDE_CONFIG: "serverName=${APP_NAME}"
+      XDEBUG_CONFIG: "remote_host=${CURRENT_IP}"
+      XDEBUG_SESSION: "${XDEBUG_SESSION}"
+      DOCKER_DEV: 'true'
+      NETTE_DEBUG: 1
+      NETTE_ENV: development
+    volumes:
+      - ./:/var/www/html:cached
+      - ./.docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    ports:
+    - '8180:80'
